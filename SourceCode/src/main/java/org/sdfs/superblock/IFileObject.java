@@ -3,6 +3,7 @@ package org.sdfs.superblock;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.sdfs.commons.FileMeta;
 import org.sdfs.exceptions.SdfsException;
 
 public interface IFileObject {
@@ -13,7 +14,7 @@ public interface IFileObject {
 	public InputStream openFile(long offset, long size) throws SdfsException;
 
 	/** 创建一个文件，打开文件写入流 */
-	public OutputStream writeFile(FileMeta fileMeta) throws SdfsException;
+	public OutputStream createFile(FileMeta fileMeta) throws SdfsException;
 
 	/** 打开一个文件，用来追加 */
 	public OutputStream appendFile() throws SdfsException;

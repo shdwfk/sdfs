@@ -1,5 +1,6 @@
 package org.sdfs.superblock;
 
+import org.sdfs.commons.SuperBlockInfo;
 import org.sdfs.exceptions.SdfsException;
 
 
@@ -10,7 +11,7 @@ import org.sdfs.exceptions.SdfsException;
  */
 public interface ISuperBlock {
 
-	/** 获取一个file object */
+	/** 获取一个FileObject */
 	public IFileObject getFileObject(long key) throws SdfsException;
 
 	/** 得到SuperBlock中文件总数 */
@@ -24,4 +25,7 @@ public interface ISuperBlock {
 
 	/** 在经历了多次写入、删除之后，需要对整个文件做compact，压缩空间占用 */
 	public void compact() throws SdfsException;
+
+	/** 获取本SuperBlock的SuperBlockInfo */
+	public SuperBlockInfo getBlockInfo();
 }
