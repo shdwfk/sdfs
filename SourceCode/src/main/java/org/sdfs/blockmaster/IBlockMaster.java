@@ -3,6 +3,7 @@ package org.sdfs.blockmaster;
 import java.net.InetSocketAddress;
 import java.util.List;
 
+import org.sdfs.commons.FileObjectDescriptor;
 import org.sdfs.commons.ISdfsCommand;
 import org.sdfs.commons.SuperBlockInfo;
 
@@ -25,4 +26,7 @@ public interface IBlockMaster {
 
 	/** 生成调度命令，供BlockServer来执行 */
 	public List<ISdfsCommand> generateCommands();
+
+	/** 拟创建一个新FileObject，返回该FileObject的文件描述符 */
+	public FileObjectDescriptor createNewFileObject();
 }
