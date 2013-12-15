@@ -131,6 +131,7 @@ public class MockSuperBlock implements ISuperBlock {
 					fileMetas.put(fileId, fileMeta);
 					removeFlags.remove(fileId);
 					++ version;
+
 				}
 			};
 		}
