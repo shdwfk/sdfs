@@ -40,4 +40,8 @@ public class SuperBlockImpl implements ISuperBlock {
 		return null;
 	}
 
+	public long generateFileKey(long version) throws SdfsException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

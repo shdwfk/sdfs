@@ -92,19 +92,22 @@ public class FileObjectTest extends TestCaseBase {
 			assertTrue(false);
 		} catch (SdfsException e) {}
 
-		// 已删除文件，可以再次创建并写文件
+		// 已删除文件，不可以再次创建并写文件
 		size = random.nextInt(1024 * 1024);
 		os = fileObject.createFile(null);
 		mockInputStream = new MockInputStream(size);
 		copySize = IOUtils.copy(mockInputStream, os);
 		assertEquals(size, copySize);
-		os.close();
+		try {
+			os.close();
+			assertTrue(false);
+		} catch (IOException e) {}
 		mockInputStream.close();
 
-		// 再次读文件并check
-		is = fileObject.openFile();
-		verifyInputStream(size, mockInputStream.getAdler32(), is);
-		is.close();
+//		// 再次读文件并check
+//		is = fileObject.openFile();
+//		verifyInputStream(size, mockInputStream.getAdler32(), is);
+//		is.close();
 	}
 
 	public void testFileNotExists() throws SdfsException {

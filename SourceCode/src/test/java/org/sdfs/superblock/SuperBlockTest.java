@@ -1,7 +1,6 @@
 package org.sdfs.superblock;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -32,14 +31,14 @@ public class SuperBlockTest extends TestCaseBase {
 	@Test
 	public void testInject() throws SdfsException {
 		assertNotNull(superBlock);
-		assertEquals(SuperBlockImpl.class, superBlock.getClass());
+		assertEquals(MockSuperBlock.class, superBlock.getClass());
 	}
 
 	@Test
 	public void testSuperBlock() throws SdfsException, IOException {
-		long key1 = 100L;
-		long key2 = 200L;
-		long key3 = 300L;
+		long key1 = 1L;
+		long key2 = 2L;
+		long key3 = 3L;
 
 		long size1 = 10000;
 		long size2 = 0;
