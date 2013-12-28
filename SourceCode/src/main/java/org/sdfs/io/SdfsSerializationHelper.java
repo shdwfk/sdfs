@@ -2,7 +2,9 @@ package org.sdfs.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +33,7 @@ public class SdfsSerializationHelper {
 		T instance = null;
 		try {
 			instance = (T) clazz.newInstance();
-		} catch (Exception e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			throw new IOException(e);
 		}
 		instance.readFrom(dataInputStream);
@@ -128,5 +130,45 @@ public class SdfsSerializationHelper {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		writeObject(out, object);
 		return out.toByteArray();
+	}
+
+	public static void writeStringNull(DataOutput out, String str) throws IOException {
+		out.writeBoolean(str != null);
+		if (str != null) {
+			out.writeUTF(str);
+		}
+	}
+
+	public static String readStringNull(DataInput in) throws IOException {
+		if (in.readBoolean()) {
+			return in.readUTF();
+		}
+		return null;
+	}
+
+	public static void writeSerializableObjectNull(DataOutput out, ISdfsSerializable serializableObj) throws IOException {
+		out.writeBoolean(serializableObj != null);
+		if (serializableObj != null) {
+			int type = SdfsSerializationRegistry.getType(serializableObj.getClass());
+			out.writeInt(type);
+			serializableObj.writeTo(out);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends ISdfsSerializable> T readSerializableObjectNull(DataInput in) throws IOException {
+		if (in.readBoolean()) {
+			int type = in.readInt();
+			Class<? extends ISdfsSerializable> clazz = SdfsSerializationRegistry.getClazz(type);
+			T newInstance;
+			try {
+				newInstance = (T) clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new IOException(e);
+			}
+			newInstance.readFrom(in);
+			return newInstance;
+		}
+		return null;
 	}
 }

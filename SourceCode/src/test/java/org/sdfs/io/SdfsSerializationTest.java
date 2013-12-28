@@ -2,6 +2,8 @@ package org.sdfs.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -45,13 +47,24 @@ public class SdfsSerializationTest extends TestCaseBase {
 		assertEquals(addNewFileRequest, addNewFileRequest4);
 
 		AddNewFileRequest addNewFileRequest5 =
-				SdfsSerializationHelper.readObjectWithoutLen(new ByteArrayInputStream(writeObjectWithoutLen));
+				SdfsSerializationHelper.readObjectWithoutLen(
+						new ByteArrayInputStream(writeObjectWithoutLen));
 		assertEquals(addNewFileRequest, addNewFileRequest5);
-	}
 
-	private void assertEquals(AddNewFileRequest expected, AddNewFileRequest addNewFileRequest) {
-		assertEquals(expected.getBlockId(), addNewFileRequest.getBlockId());
-		assertEquals(expected.getFileKey(), addNewFileRequest.getFileKey());
-		assertTrue(Arrays.equals(expected.getFileData(), addNewFileRequest.getFileData()));
+		out = new ByteArrayOutputStream();
+		SdfsSerializationHelper.writeSerializableObjectNull(
+				new DataOutputStream(out), addNewFileRequest);
+		AddNewFileRequest addNewFileRequest6 =
+				SdfsSerializationHelper.readSerializableObjectNull(
+						new DataInputStream(new ByteArrayInputStream(out.toByteArray())));
+		assertEquals(addNewFileRequest, addNewFileRequest6);
+
+		out = new ByteArrayOutputStream();
+		SdfsSerializationHelper.writeSerializableObjectNull(
+				new DataOutputStream(out), null);
+		AddNewFileRequest addNewFileRequest7 =
+				SdfsSerializationHelper.readSerializableObjectNull(
+						new DataInputStream(new ByteArrayInputStream(out.toByteArray())));
+		assertNull(addNewFileRequest7);
 	}
 }

@@ -18,18 +18,19 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import org.sdfs.io.SdfsSerializationHelper;
 import org.sdfs.io.request.IRequest;
 import org.sdfs.io.response.IResponse;
+import org.sdfs.io.rpc.RpcMessage;
 
 /**
  * Channel Outbound：序列化Request
  * @author wangfk
  *
  */
-class RequestSendHandler extends MessageToByteEncoder<IRequest> {
+class RequestSendHandler extends MessageToByteEncoder<RpcMessage<IRequest>> {
 
 	@Override
-	protected void encode(ChannelHandlerContext ctx, IRequest msg, ByteBuf out)
+	protected void encode(ChannelHandlerContext ctx, RpcMessage<IRequest> request, ByteBuf out)
 			throws Exception {
-		SdfsSerializationHelper.writeObject(new ByteBufOutputStream(out), msg);
+		SdfsSerializationHelper.writeObject(new ByteBufOutputStream(out), request);
 	}
 }
 
@@ -42,9 +43,9 @@ class ResponseReceiveHandler extends ChannelInboundHandlerAdapter {
 	private int dataLen = -1;
 	private ByteBuf buffer;
 
-	private IResponse response;
+	private RpcMessage<IResponse> response;
 
-    public IResponse getResponse() {
+    public RpcMessage<IResponse> getResponse() {
 		return response;
 	}
 
@@ -62,7 +63,6 @@ class ResponseReceiveHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
-		System.out.println("ResponseReceiveHandler: Method invoked: channelRead");
 		ByteBuf buf = (ByteBuf) msg;
 		if (dataLen == -1) {
 			if (buf.readableBytes() < 4) {
@@ -80,9 +80,9 @@ class ResponseReceiveHandler extends ChannelInboundHandlerAdapter {
 	}
 }
 
-public class RpcClient {
+public class RequestRpcClient {
 	
-	public static IResponse requestInvoke(String host, int port, final IRequest request) throws InterruptedException {
+	public static RpcMessage<IResponse> requestInvoke(String host, int port, final RpcMessage<IRequest> request) throws InterruptedException {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         final ResponseReceiveHandler responseReceiveHandler = new ResponseReceiveHandler();
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.sdfs.io.SdfsSerializationHelper;
 import org.sdfs.io.request.IRequest;
+import org.sdfs.io.rpc.RpcMessage;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,7 +38,6 @@ public class RequestDecoder extends ReplayingDecoder<RequestDecoderState> {
 	@Override
 	protected void decode(ChannelHandlerContext ctx, ByteBuf in,
 			List<Object> out) throws Exception {
-		System.out.println("RequestDecoder: Method invoked: decode");
 		switch (state()) {
 		case READ_LENGTH:
 			// 读取对象长度
@@ -48,8 +48,7 @@ public class RequestDecoder extends ReplayingDecoder<RequestDecoderState> {
 			//根据对象长度，读取数据并反序列化Request对象
 			ByteBuf data = in.readBytes(length);
 			checkpoint(RequestDecoderState.READ_LENGTH);
-			IRequest request = SdfsSerializationHelper.readObjectWithoutLen(data.array());
-			System.out.println("RequestDecoder: " + request);
+			RpcMessage<IRequest> request = SdfsSerializationHelper.readObjectWithoutLen(data.array());
 			out.add(request);
 			break;
 		default:

@@ -1,5 +1,7 @@
 package org.sdfs.io.rpc.server;
 
+import java.util.List;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelHandlerContext;
@@ -7,6 +9,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 
 import org.sdfs.io.SdfsSerializationHelper;
 import org.sdfs.io.response.IResponse;
+import org.sdfs.io.rpc.RpcMessage;
 
 /**
  * Channel Outbound：Response序列化，Response --> ByteBuf（数据流）<br>
@@ -14,14 +17,18 @@ import org.sdfs.io.response.IResponse;
  * @author wangfk
  *
  */
-public class ResponseEncoder extends MessageToByteEncoder<IResponse> {
+public class ResponseEncoder extends MessageToByteEncoder<List<RpcMessage<IResponse>>> {
 
 	@Override
-	protected void encode(ChannelHandlerContext ctx, IResponse msg, ByteBuf out)
+	protected void encode(ChannelHandlerContext ctx, List<RpcMessage<IResponse>> responseList, ByteBuf out)
 			throws Exception {
-		System.out.println("ResponseEncoder: Method invoked: encode, msg: " + msg);
 		ByteBufOutputStream bbos = new ByteBufOutputStream(out);
-		SdfsSerializationHelper.writeObject(bbos, msg);
-		bbos.flush();
+		try {
+			for (RpcMessage<IResponse> response : responseList) {
+				SdfsSerializationHelper.writeObject(bbos, response);
+			}
+		} finally {
+			bbos.close();
+		}
 	}
 }

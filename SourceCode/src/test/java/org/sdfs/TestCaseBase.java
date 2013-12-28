@@ -16,7 +16,7 @@ import org.junit.Ignore;
  *
  */
 @Ignore
-public class TestCaseBase extends Assert {
+public class TestCaseBase extends SdfsAssert {
 	protected static final Random random = new Random(System.currentTimeMillis());
 
 
