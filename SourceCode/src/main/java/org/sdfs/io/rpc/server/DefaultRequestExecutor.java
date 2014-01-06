@@ -43,7 +43,7 @@ public class DefaultRequestExecutor implements IRequestExecutor {
 		}
 	}
 
-	private static final int REQUEST_QUEUE_LENGTH = 1000; //TODO
+	private static final int REQUEST_QUEUE_LENGTH = 1000; //TODO config
 	private BlockingQueue<Request> requestQueue =
 			new ArrayBlockingQueue<Request>(REQUEST_QUEUE_LENGTH);
 	

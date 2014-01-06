@@ -1,113 +1,92 @@
 package org.sdfs.io.rpc.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.MessageToByteEncoder;
 
-import org.sdfs.io.SdfsSerializationHelper;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.concurrent.Future;
+
 import org.sdfs.io.request.IRequest;
 import org.sdfs.io.response.IResponse;
-import org.sdfs.io.rpc.RpcMessage;
+import org.sdfs.io.rpc.RpcMessageDecoder;
+import org.sdfs.io.rpc.RpcMessageEncoder;
 
-/**
- * Channel Outbound：序列化Request
- * @author wangfk
- *
- */
-class RequestSendHandler extends MessageToByteEncoder<RpcMessage<IRequest>> {
 
-	@Override
-	protected void encode(ChannelHandlerContext ctx, RpcMessage<IRequest> request, ByteBuf out)
-			throws Exception {
-		SdfsSerializationHelper.writeObject(new ByteBufOutputStream(out), request);
-	}
-}
+public class RequestRpcClient implements Closeable {
+	private static final long DEFAULT_CALL_TIMEOUT_MILLIS = 60 * 1000L;
+	private static final int DEFAULT_MAX_REQUEST_BUFFER_SIZE = 32;
+	private static final long DEFAUL_CLEAN_CALL_FUTURE_INTERVAL_MILLIS = 10 * 1000L;
 
-/**
- * Channel Inbound：反序列化Response
- * @author wangfk
- *
- */
-class ResponseReceiveHandler extends ChannelInboundHandlerAdapter {
-	private int dataLen = -1;
-	private ByteBuf buffer;
+	private long callTimeOutMillis = DEFAULT_CALL_TIMEOUT_MILLIS;
+	private int maxRequestBufferSize = DEFAULT_MAX_REQUEST_BUFFER_SIZE;
+	private long cleanCallFutureIntervalMills = DEFAUL_CLEAN_CALL_FUTURE_INTERVAL_MILLIS;
 
-	private RpcMessage<IResponse> response;
+	private RpcClientHandler rpcClientHandler;
+	private ChannelFuture channelFuture;
 
-    public RpcMessage<IResponse> getResponse() {
-		return response;
+	private static final int EVENT_GROUP_THREADS = 5;
+
+	public RequestRpcClient setCallTimeOutMillis(long callTimeOutMillis) {
+		this.callTimeOutMillis = callTimeOutMillis;
+		return this;
 	}
 
-	@Override
-    public void handlerAdded(ChannelHandlerContext ctx) {
-    	buffer = ctx.alloc().buffer();
-    }
-    
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) {
-    	buffer.release();
-    	buffer = null;
-    }
+	public RequestRpcClient setMaxRequestBufferSize(int maxRequestBufferSize) {
+		this.maxRequestBufferSize = maxRequestBufferSize;
+		return this;
+	}
+
+	public RequestRpcClient setCleanCallFutureIntervalMills(long cleanCallFutureIntervalMills) {
+		this.cleanCallFutureIntervalMills = cleanCallFutureIntervalMills;
+		return this;
+	}
+
+	public RequestRpcClient connect(String host, int port) throws InterruptedException {
+        EventLoopGroup workerGroup = new NioEventLoopGroup(EVENT_GROUP_THREADS);
+        rpcClientHandler = new RpcClientHandler()
+        		.setCallTimeOutMillis(callTimeOutMillis)
+        		.setCleanCallFutureIntervalMills(cleanCallFutureIntervalMills)
+        		.setMaxRequestBufferSize(maxRequestBufferSize);
+
+        Bootstrap b = new Bootstrap();
+        b.group(workerGroup);
+        b.channel(NioSocketChannel.class);
+        b.option(ChannelOption.SO_KEEPALIVE, true);
+        b.handler(new ChannelInitializer<SocketChannel>() {
+        	@Override
+        	public void initChannel(SocketChannel ch) throws Exception {
+        		ch.pipeline().addLast(new RpcMessageEncoder<IRequest>(),
+        				new RpcMessageDecoder<IResponse>(), rpcClientHandler);
+        	}
+        });
+
+        // Start the client.
+        channelFuture = b.connect(host, port).sync();
+        return this;
+	}
+
+	public void join() throws InterruptedException {
+		channelFuture.channel().closeFuture().sync();
+	}
 
 	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg)
-			throws Exception {
-		ByteBuf buf = (ByteBuf) msg;
-		if (dataLen == -1) {
-			if (buf.readableBytes() < 4) {
-				return;
-			}
-			dataLen = buf.readInt();
-			buffer.capacity(dataLen);
+	public void close() throws IOException {
+		channelFuture.channel().close();
+		try {
+			channelFuture.channel().closeFuture().sync();
+		} catch (InterruptedException e) {
 		}
-		buffer.writeBytes(buf);
-		if (buffer.readableBytes() >= dataLen) {
-			response = SdfsSerializationHelper.readObjectWithoutLen(new ByteBufInputStream(buffer));
-			//一旦response接受完毕，就关闭channel
-			ctx.close();
-		}
+		channelFuture.channel().eventLoop().shutdownGracefully();
 	}
-}
 
-public class RequestRpcClient {
-	
-	public static RpcMessage<IResponse> requestInvoke(String host, int port, final RpcMessage<IRequest> request) throws InterruptedException {
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
-        final ResponseReceiveHandler responseReceiveHandler = new ResponseReceiveHandler();
-
-        try {
-            Bootstrap b = new Bootstrap();
-            b.group(workerGroup);
-            b.channel(NioSocketChannel.class);
-            b.option(ChannelOption.SO_KEEPALIVE, true);
-            b.handler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                public void initChannel(SocketChannel ch) throws Exception {
-					ch.pipeline().addLast(new RequestSendHandler(), responseReceiveHandler);
-                }
-            });
-
-            // Start the client.
-            ChannelFuture f = b.connect(host, port).sync();
-            f.channel().writeAndFlush(request);
-
-            // Wait until the connection is closed.
-            f.channel().closeFuture().sync();
-        } finally {
-            workerGroup.shutdownGracefully();
-        }
-        //返回handler解析的response对象
-		return responseReceiveHandler.getResponse();
+	public Future<IResponse> rpcCall(IRequest request) {
+		return rpcClientHandler.addNewRequest(request);
 	}
 }

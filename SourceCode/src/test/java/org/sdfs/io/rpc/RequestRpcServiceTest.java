@@ -1,5 +1,8 @@
 package org.sdfs.io.rpc;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,28 +52,32 @@ public class RequestRpcServiceTest extends TestCaseBase {
 	}
 
 	@Test
-	public void testSendAndReceive() throws InterruptedException {
+	public void testSendAndReceive() throws InterruptedException, ExecutionException, IOException {
 
 		AddNewFileRequest addNewFileRequest = new AddNewFileRequest();
 		addNewFileRequest.setBlockId(100);
 		addNewFileRequest.setFileKey(101);
 		addNewFileRequest.setFileData(new byte[1024]);
 
-		RpcMessage<IResponse> response = RequestRpcClient.requestInvoke("127.0.0.1", port, new RpcMessage<IRequest>(1L, addNewFileRequest));
-		assertEquals(response.getMessage().getResponseType(), ResponseType.ADD_NEW_FILE);
-		assertEquals(response.getMessageId(), 1L);
-		assertTrue(((AddNewFileResponse) response.getMessage()).isSuccessful());
+		RequestRpcClient requestRpcClient = new RequestRpcClient().connect("127.0.0.1", port);
 
-		response = RequestRpcClient.requestInvoke("127.0.0.1", port, new RpcMessage<IRequest>(2L, addNewFileRequest));
-		assertEquals(response.getMessage().getResponseType(), ResponseType.ADD_NEW_FILE);
-		assertEquals(response.getMessageId(), 2L);
-		assertTrue(((AddNewFileResponse) response.getMessage()).isSuccessful());
+		IResponse response = requestRpcClient.rpcCall(addNewFileRequest).get();
+		assertEquals(response.getResponseType(), ResponseType.ADD_NEW_FILE);
+		assertTrue(((AddNewFileResponse) response).isSuccessful());
+
+		response = requestRpcClient.rpcCall(addNewFileRequest).get();
+		assertEquals(response.getResponseType(), ResponseType.ADD_NEW_FILE);
+		assertTrue(((AddNewFileResponse) response).isSuccessful());
 
 		//exception will raised
 		addNewFileRequest.setFileData(new byte[0]);
-		response = RequestRpcClient.requestInvoke("127.0.0.1", port, new RpcMessage<IRequest>(3L, addNewFileRequest));
-		assertEquals(response.getMessageId(), 3L);
-		assertTrue(response.hasException());
-		response.getException().printStackTrace();
+		try {
+			response = requestRpcClient.rpcCall(addNewFileRequest).get();
+			assertFalse(true);
+		} catch (ExecutionException e) {
+			assertTrue(true);
+			e.printStackTrace();
+		}
+		requestRpcClient.close();
 	}
 }

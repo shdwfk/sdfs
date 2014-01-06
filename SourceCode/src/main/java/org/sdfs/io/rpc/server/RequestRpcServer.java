@@ -1,5 +1,9 @@
 package org.sdfs.io.rpc.server;
 
+import org.sdfs.io.request.IRequest;
+import org.sdfs.io.response.IResponse;
+import org.sdfs.io.rpc.RpcMessageDecoder;
+import org.sdfs.io.rpc.RpcMessageEncoder;
 import org.sdfs.io.rpc.server.interfaces.IRequestExecutor;
 import org.sdfs.io.rpc.server.interfaces.IRequestHandler;
 import org.sdfs.io.rpc.server.interfaces.IRequestInvokeAdaptor;
@@ -63,8 +67,8 @@ public class RequestRpcServer {
                  public void initChannel(SocketChannel ch) throws Exception {
                 	 IRequestHandler requestHandler = new DefaultRequestHandler();
                 	 requestHandler.setRequestExecutor(requestExecutor);
-                     ch.pipeline().addLast(new RequestDecoder(),
-                    		 new ResponseEncoder(), requestHandler);
+                     ch.pipeline().addLast(new RpcMessageDecoder<IRequest>(),
+                    		 new RpcMessageEncoder<IResponse>(), requestHandler);
                  }
              })
              .option(ChannelOption.SO_BACKLOG, 128)
