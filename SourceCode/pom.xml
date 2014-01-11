@@ -51,6 +51,10 @@
   	    <groupId>com.google.protobuf</groupId>
   	    <artifactId>protobuf-java</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>commons-configuration</groupId>
+  		<artifactId>commons-configuration</artifactId>
+  	</dependency>
   </dependencies>
   <dependencyManagement>
   	<dependencies>
@@ -99,6 +103,11 @@
   	    	<artifactId>netty-example</artifactId>
   	    	<version>4.0.13.Final</version>
   	    </dependency>
+  	    <dependency>
+  			<groupId>commons-configuration</groupId>
+  			<artifactId>commons-configuration</artifactId>
+  		<version>1.10</version>
+  	</dependency>
   	</dependencies>
   </dependencyManagement>
 </project>

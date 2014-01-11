@@ -38,10 +38,12 @@ public class MockSuperBlock implements ISuperBlock {
 		this.blockId = blockId;
 	}
 
+	@Override
 	public IFileObject getFileObject(long key) throws SdfsException {
 		return new MockFileObject(key);
 	}
 
+	@Override
 	public long getFileCount() {
 		long result = 0;
 		for (Long key : fileData.keySet()) {
@@ -52,6 +54,7 @@ public class MockSuperBlock implements ISuperBlock {
 		return result;
 	}
 
+	@Override
 	public long getAvailableSize() {
 		long size = 0L;
 		for (Entry<Long, byte[]> data : fileData.entrySet()) {
@@ -62,6 +65,7 @@ public class MockSuperBlock implements ISuperBlock {
 		return size;
 	}
 
+	@Override
 	public long getTotalSize() {
 		long size = 0;
 		for (byte[] data : fileData.values()) {
@@ -70,6 +74,7 @@ public class MockSuperBlock implements ISuperBlock {
 		return size;
 	}
 
+	@Override
 	public void compact() throws SdfsException {
 		for (long fileId : removeFlags) {
 			fileData.remove(fileId);
@@ -78,6 +83,7 @@ public class MockSuperBlock implements ISuperBlock {
 		removeFlags.clear();
 	}
 
+	@Override
 	public SuperBlockInfo getBlockInfo() {
 		SuperBlockInfo superBlockInfo = new SuperBlockInfo();
 		superBlockInfo.setBlockId(blockId);
@@ -88,14 +94,11 @@ public class MockSuperBlock implements ISuperBlock {
 		return superBlockInfo;
 	}
 
-	public long generateFileKey(long version) throws SdfsException {
-		if (version != this.version + 1) {
-			throw new SdfsException(
-					"Invalid version, block current version is " + this.version
-					+ ", and the user version is " + version);
-		}
-		return this.version + 1;
+	@Override
+	public long getVersion() {
+		return version;
 	}
+
 
 	class MockFileObject implements IFileObject {
 		private long fileId;
@@ -104,15 +107,18 @@ public class MockSuperBlock implements ISuperBlock {
 			this.fileId = fileId;
 		}
 
+		@Override
 		public InputStream openFile() throws SdfsException {
 			return new ByteArrayInputStream(getFileData());
 		}
 
+		@Override
 		public InputStream openFile(long offset, long size)
 				throws SdfsException {
 			return new ByteArrayInputStream(getFileData(), (int)offset, (int)size);
 		}
 
+		@Override
 		public OutputStream createFile(final FileMeta fileMeta) throws SdfsException {
 			if (fileExists()) {
 				throw new SdfsException("The file does exist, BlockId="
@@ -120,6 +126,7 @@ public class MockSuperBlock implements ISuperBlock {
 			}
 
 			return new ByteArrayOutputStream(){
+				@Override
 				public void close() throws IOException {
 					if (version + 1 != fileId) {
 						throw new IOException(
@@ -136,6 +143,7 @@ public class MockSuperBlock implements ISuperBlock {
 			};
 		}
 
+		@Override
 		public OutputStream appendFile() throws SdfsException {
 			OutputStream outputStream = createFile(getFileMeta()); 
 			try {
@@ -146,16 +154,19 @@ public class MockSuperBlock implements ISuperBlock {
 			return outputStream;
 		}
 
+		@Override
 		public FileMeta getFileMeta() throws SdfsException {
 			checkFileExists();
 			return fileMetas.get(fileId);
 		}
 
+		@Override
 		public void updateFileMeta(FileMeta fileMeta) throws SdfsException {
 			checkFileExists();
 			fileMetas.put(fileId, fileMeta);
 		}
 
+		@Override
 		public void delete() throws SdfsException {
 			if (!fileData.containsKey(fileId)) {
 				throw new SdfsException("The file does not exist, BlockId="
@@ -168,6 +179,7 @@ public class MockSuperBlock implements ISuperBlock {
 			removeFlags.add(fileId);
 		}
 
+		@Override
 		public long getFileSize() {
 			try {
 				return getFileData().length;
@@ -176,6 +188,7 @@ public class MockSuperBlock implements ISuperBlock {
 			return 0;
 		}
 
+		@Override
 		public boolean fileExists() {
 			return fileData.containsKey(fileId) && !removeFlags.contains(fileId);
 		}

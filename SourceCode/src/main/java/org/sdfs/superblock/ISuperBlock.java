@@ -30,5 +30,5 @@ public interface ISuperBlock {
 	public SuperBlockInfo getBlockInfo();
 
 	/** 生成一个新的file key，该key与已存在的key不重复 */
-	public long generateFileKey(long version) throws SdfsException;
+	public long getVersion() throws SdfsException;
 }

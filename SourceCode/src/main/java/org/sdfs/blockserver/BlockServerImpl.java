@@ -21,6 +21,7 @@ public class BlockServerImpl implements IBlockServer {
 	private Map<Long, ISuperBlock> superBlocks = new HashMap<Long, ISuperBlock>();
 	private ReentrantReadWriteLock superBlocksRWLock = new ReentrantReadWriteLock();
 
+	@Override
 	public ISuperBlock getSuperBlock(long blockId) throws SdfsException {
 		superBlocksRWLock.readLock().lock();
 		try {
@@ -31,6 +32,7 @@ public class BlockServerImpl implements IBlockServer {
 		}
 	}
 
+	@Override
 	public List<SuperBlockInfo> getAllSuperBlockInfos() {
 		ArrayList<SuperBlockInfo> result = new ArrayList<SuperBlockInfo>();
 		superBlocksRWLock.readLock().lock();
@@ -44,6 +46,7 @@ public class BlockServerImpl implements IBlockServer {
 		return result;
 	}
 
+	@Override
 	public void removeSuperBlock(long blockId) throws SdfsException {
 		superBlocksRWLock.writeLock().lock();
 		try {
@@ -54,6 +57,7 @@ public class BlockServerImpl implements IBlockServer {
 		}
 	}
 
+	@Override
 	public void addNewSuperBlock(long blockId) throws SdfsException {
 		superBlocksRWLock.writeLock().lock();
 		try {
@@ -64,6 +68,7 @@ public class BlockServerImpl implements IBlockServer {
 		}
 	}
 
+	@Override
 	public long getAvailableSize() {
 		superBlocksRWLock.readLock().lock();
 		try {
@@ -77,6 +82,7 @@ public class BlockServerImpl implements IBlockServer {
 		}
 	}
 
+	@Override
 	public long getTotalSize() {
 		superBlocksRWLock.readLock().lock();
 		try {
@@ -90,13 +96,9 @@ public class BlockServerImpl implements IBlockServer {
 		}
 	}
 
+	@Override
 	public void execCommand(ISdfsCommand sdfsCommand) throws SdfsException {
 		// TODO Auto-generated method stub
-	}
-
-	public String getNextFileUploadId(long blockId, long version) {
-		//TODO
-		throw new RuntimeException();
 	}
 
 	private void checkBlockExisting(long blockId, boolean expectedExisting) throws SdfsException {

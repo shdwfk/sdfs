@@ -141,7 +141,6 @@ public class RequestRpcServiceParallelTest extends TestCaseBase {
 
 	private RpcAccessThread[] createClientAndAccess(int parallel,
 			int eachAccessCount) throws Exception {
-		@SuppressWarnings("resource")
 		RequestRpcClient client = new RequestRpcClient().connect(host, port);
 		RpcAccessThread[] threads = new RpcAccessThread[parallel];
 		for (int i = 0; i < parallel; ++ i) {

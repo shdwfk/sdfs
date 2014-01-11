@@ -8,4 +8,5 @@ package org.sdfs.io.request;
 public enum RequestType {
 	TEST_CASE_TYPE,
 	ADD_NEW_FILE,
+	FETCH_FILE,
 }
