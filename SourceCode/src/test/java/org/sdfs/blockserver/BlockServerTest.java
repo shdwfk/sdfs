@@ -32,6 +32,7 @@ public class BlockServerTest extends TestCaseBase {
 
 	@Before
 	public void before() {
+		// 因为SuperBlockImpl还未实现，将ISuperBlock的注入类型改为MockSuperBlock
 		BlockServerGuice.reset(new TestCaseGuiceModule());
 	}
 

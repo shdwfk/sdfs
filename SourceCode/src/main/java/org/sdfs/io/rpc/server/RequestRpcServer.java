@@ -34,18 +34,15 @@ public class RequestRpcServer {
 	public RequestRpcServer(int requestExecuteConcurrency,
 			int messageHandleConcurrency,
 			IRequestInvokeAdaptor requestInvokeAdaptor) {
-		this(   messageHandleConcurrency, 
-				new DefaultRequestExecutor(requestExecuteConcurrency),
-				requestInvokeAdaptor);
+		this.messageHandleConcurrency = messageHandleConcurrency;
+		this.requestExecutor = new DefaultRequestExecutor(requestExecuteConcurrency);
+		this.requestExecutor.setRequestInvokeAdaptor(requestInvokeAdaptor);
 	}
 
-	public RequestRpcServer(
-			int messageHandleConcurrency, 
-			IRequestExecutor requestExecutor,
-			IRequestInvokeAdaptor requestInvokeAdaptor
+	public RequestRpcServer(int messageHandleConcurrency, 
+			IRequestExecutor requestExecutor
 			) {
 		this.messageHandleConcurrency = messageHandleConcurrency;
-		requestExecutor.setRequestInvokeAdaptor(requestInvokeAdaptor);
 		this.requestExecutor = requestExecutor;
 	}
 
@@ -98,6 +95,7 @@ public class RequestRpcServer {
 				}
 			}
 		};
+		thread.setDaemon(true);
 		thread.start();
 		return thread;
 	}

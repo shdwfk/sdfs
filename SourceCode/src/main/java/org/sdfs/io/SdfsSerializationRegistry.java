@@ -3,7 +3,9 @@ package org.sdfs.io;
 import java.util.HashMap;
 
 import org.sdfs.io.request.AddNewFileRequest;
+import org.sdfs.io.request.FetchFileRequest;
 import org.sdfs.io.response.AddNewFileResponse;
+import org.sdfs.io.response.FetchFileResponse;
 import org.sdfs.io.rpc.RpcException;
 import org.sdfs.io.rpc.RpcMessage;
 
@@ -22,6 +24,8 @@ public class SdfsSerializationRegistry {
 		register(1, RpcException.class);
 		register(2, AddNewFileRequest.class);
 		register(3, AddNewFileResponse.class);
+		register(4, FetchFileRequest.class);
+		register(5, FetchFileResponse.class);
 	}
 
 	public static final synchronized void register(int type, Class<? extends ISdfsSerializable> clazz) {

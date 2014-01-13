@@ -23,7 +23,7 @@ public class TestCaseGuiceModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(ISuperBlock.class).to(MockSuperBlock.class);
-		bind(IBlockServer.class).to(BlockServerImpl.class).asEagerSingleton();
+		bind(IBlockServer.class).to(BlockServerImpl.class);
 		bind(IBlockMaster.class).to(BlockMasterImpl.class).asEagerSingleton();
 		bind(INameServer.class).to(NameServerImpl.class).asEagerSingleton();
 	}
