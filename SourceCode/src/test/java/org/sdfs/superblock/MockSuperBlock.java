@@ -24,17 +24,14 @@ import org.sdfs.exceptions.SdfsException;
  *
  */
 public class MockSuperBlock implements ISuperBlock {
-	final long blockId;
+	long blockId;
 	long version = 0;
 	Map<Long, byte[]> fileData = Collections.synchronizedMap(new HashMap<Long, byte[]>());
 	Map<Long, FileMeta> fileMetas = Collections.synchronizedMap(new HashMap<Long, FileMeta>());
 	Set<Long> removeFlags = Collections.synchronizedSet(new HashSet<Long>());
 
-	public MockSuperBlock() {
-		this.blockId = 1L;
-	}
-
-	public MockSuperBlock(long blockId) {
+	@Override
+	public void init(String blockDir, long blockId) throws SdfsException {
 		this.blockId = blockId;
 	}
 

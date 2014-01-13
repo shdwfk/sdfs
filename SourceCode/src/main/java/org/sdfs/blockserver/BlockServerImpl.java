@@ -9,8 +9,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.sdfs.commons.ISdfsCommand;
 import org.sdfs.commons.SuperBlockInfo;
 import org.sdfs.exceptions.SdfsException;
+import org.sdfs.guice.BlockServerGuice;
 import org.sdfs.superblock.ISuperBlock;
-import org.sdfs.superblock.MockSuperBlock;
 
 /**
  * IBlockServer的实现类
@@ -20,6 +20,14 @@ import org.sdfs.superblock.MockSuperBlock;
 public class BlockServerImpl implements IBlockServer {
 	private Map<Long, ISuperBlock> superBlocks = new HashMap<Long, ISuperBlock>();
 	private ReentrantReadWriteLock superBlocksRWLock = new ReentrantReadWriteLock();
+
+	private String blockDir;
+
+	@Override
+	public void init(String blockDir) throws SdfsException {
+		this.blockDir = blockDir;
+		// TODO init
+	}
 
 	@Override
 	public ISuperBlock getSuperBlock(long blockId) throws SdfsException {
@@ -62,7 +70,10 @@ public class BlockServerImpl implements IBlockServer {
 		superBlocksRWLock.writeLock().lock();
 		try {
 			checkBlockExisting(blockId, false);
-			superBlocks.put(blockId, new MockSuperBlock());
+			ISuperBlock superBlock =
+					BlockServerGuice.getInjector().getInstance(ISuperBlock.class);
+			superBlock.init(blockDir, blockId);
+			superBlocks.put(blockId, superBlock);
 		} finally {
 			superBlocksRWLock.writeLock().unlock();
 		}

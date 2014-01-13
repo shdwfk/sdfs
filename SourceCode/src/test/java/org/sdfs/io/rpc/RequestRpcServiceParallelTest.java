@@ -38,7 +38,6 @@ public class RequestRpcServiceParallelTest extends TestCaseBase {
 			public IResponse invokeRequest(IRequest request) throws Exception {
 				assertEquals(RequestType.TEST_CASE_TYPE, request.getRequestType());
 				CalculateRequest calculateRequest = (CalculateRequest) request;
-				System.out.println(calculateRequest);
 
 				int result;
 				switch (calculateRequest.getOperator()) {

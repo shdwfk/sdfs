@@ -9,6 +9,15 @@ import org.sdfs.exceptions.SdfsException;
  *
  */
 public class SuperBlockImpl implements ISuperBlock {
+	private String blockDir;
+	private long blockId;
+
+	@Override
+	public void init(String blockDir, long blockId) throws SdfsException {
+		// TODO Auto-generated method stub
+		this.blockId = blockId;
+		this.blockDir = blockDir;
+	}
 
 	@Override
 	public IFileObject getFileObject(long key) throws SdfsException {

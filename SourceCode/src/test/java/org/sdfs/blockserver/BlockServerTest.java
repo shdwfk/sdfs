@@ -6,11 +6,13 @@ import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.onami.test.OnamiRunner;
 import org.apache.onami.test.annotation.GuiceModules;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sdfs.TestCaseBase;
 import org.sdfs.TestCaseGuiceModule;
 import org.sdfs.exceptions.SdfsException;
+import org.sdfs.guice.BlockServerGuice;
 import org.sdfs.superblock.IFileObject;
 import org.sdfs.superblock.ISuperBlock;
 
@@ -27,6 +29,11 @@ public class BlockServerTest extends TestCaseBase {
 
 	@Inject
 	private IBlockServer blockServer;
+
+	@Before
+	public void before() {
+		BlockServerGuice.reset(new TestCaseGuiceModule());
+	}
 
 	@Test
 	public void testInject() throws SdfsException {

@@ -14,6 +14,9 @@ import org.sdfs.superblock.ISuperBlock;
  */
 public interface IBlockServer {
 
+	/** 初始化一个BlockServer，blockDir为block在文件系统中的存放位置 */
+	public void init(String blockDir) throws SdfsException;
+
 	/** 通过blockId得到一个SuperBlock对象  */
 	public ISuperBlock getSuperBlock(long blockId) throws SdfsException;
 

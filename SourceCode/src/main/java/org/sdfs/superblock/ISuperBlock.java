@@ -11,6 +11,8 @@ import org.sdfs.exceptions.SdfsException;
  */
 public interface ISuperBlock {
 
+	public void init(String blockDir, long blockId) throws SdfsException;
+
 	/** 获取一个FileObject */
 	public IFileObject getFileObject(long key) throws SdfsException;
 

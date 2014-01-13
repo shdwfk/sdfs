@@ -1,17 +1,24 @@
 package org.sdfs.guice;
 
+import org.sdfs.blockserver.BlockServerImpl;
+import org.sdfs.blockserver.IBlockServer;
+import org.sdfs.superblock.ISuperBlock;
+import org.sdfs.superblock.SuperBlockImpl;
+
 import com.google.inject.AbstractModule;
 
-public class BlockServerGuice {
+public class BlockServerGuice extends AbstractGuice {
 
-	class BlockServerGuiceMudule extends AbstractModule {
+	static class BlockServerGuiceMudule extends AbstractModule {
 
 		@Override
 		protected void configure() {
-			// TODO Auto-generated method stub
-			
+			bind(ISuperBlock.class).to(SuperBlockImpl.class);
+			bind(IBlockServer.class).to(BlockServerImpl.class);
 		}
-		
 	}
 
+	static {
+		init(new BlockServerGuiceMudule());
+	}
 }
