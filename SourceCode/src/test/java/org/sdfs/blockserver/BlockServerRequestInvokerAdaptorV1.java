@@ -5,22 +5,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.sdfs.exceptions.SdfsException;
-import org.sdfs.io.request.AddNewFileRequest;
-import org.sdfs.io.request.FetchFileRequest;
+import org.sdfs.io.AddNewFileRequest;
+import org.sdfs.io.AddNewFileResponse;
+import org.sdfs.io.FetchFileRequest;
+import org.sdfs.io.FetchFileResponse;
 import org.sdfs.io.request.IRequest;
-import org.sdfs.io.response.AddNewFileResponse;
-import org.sdfs.io.response.FetchFileResponse;
 import org.sdfs.io.response.IResponse;
 import org.sdfs.io.rpc.RpcException;
 import org.sdfs.io.rpc.server.interfaces.IRequestInvokeAdaptor;
 import org.sdfs.superblock.IFileObject;
 import org.sdfs.superblock.ISuperBlock;
 
-public class BlockServerRequestInvokerAdaptor implements IRequestInvokeAdaptor {
+@Ignore
+public class BlockServerRequestInvokerAdaptorV1 implements IRequestInvokeAdaptor {
 	private IBlockServer blockServer;
 
-	public BlockServerRequestInvokerAdaptor(IBlockServer blockServer) {
+	public BlockServerRequestInvokerAdaptorV1(IBlockServer blockServer) {
 		this.blockServer = blockServer;
 	}
 

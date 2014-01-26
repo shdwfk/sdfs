@@ -9,7 +9,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.sdfs.TestCaseBase;
-import org.sdfs.io.request.AddNewFileRequest;
 
 public class SdfsSerializationTest extends TestCaseBase {
 	@Test
@@ -34,10 +33,9 @@ public class SdfsSerializationTest extends TestCaseBase {
 				SdfsSerializationHelper.readObject(new ByteArrayInputStream(writeObject));
 		assertEquals(addNewFileRequest, addNewFileRequest3);
 
-		
 		byte[] writeObjectWithoutLen =
 				SdfsSerializationHelper.writeObjectWithoutLen(addNewFileRequest);
-		
+
 		out = new ByteArrayOutputStream();
 		SdfsSerializationHelper.writeObjectWithoutLen(out, addNewFileRequest);
 		assertTrue(Arrays.equals(writeObjectWithoutLen, out.toByteArray()));

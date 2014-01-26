@@ -3,8 +3,8 @@ package org.sdfs;
 import java.util.Arrays;
 
 import org.junit.Assert;
+import org.sdfs.io.AddNewFileRequest;
 import org.sdfs.io.ISdfsSerializable;
-import org.sdfs.io.request.AddNewFileRequest;
 import org.sdfs.io.rpc.RpcException;
 import org.sdfs.io.rpc.RpcMessage;
 

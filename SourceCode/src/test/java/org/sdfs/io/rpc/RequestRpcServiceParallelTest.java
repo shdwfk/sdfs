@@ -21,8 +21,8 @@ import org.sdfs.io.rpc.server.interfaces.IRequestInvokeAdaptor;
 public class RequestRpcServiceParallelTest extends TestCaseBase {
 	@BeforeClass
 	public static void beforeClass() {
-		SdfsSerializationRegistry.register(-1, CalculateRequest.class);
-		SdfsSerializationRegistry.register(-2, CalculateResponse.class);
+		SdfsSerializationRegistry.register(-5, CalculateRequest.class);
+		SdfsSerializationRegistry.register(-6, CalculateResponse.class);
 	}
 
 	private String host = "127.0.0.1";

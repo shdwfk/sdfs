@@ -6,6 +6,8 @@ package org.sdfs.io.response;
  *
  */
 public enum ResponseType {
+	COMMON_ARGS_RESPONSE,
+	// for testcase
 	TEST_CASE_TYPE,
 	ADD_NEW_FILE,
 	FETCH_FILE,

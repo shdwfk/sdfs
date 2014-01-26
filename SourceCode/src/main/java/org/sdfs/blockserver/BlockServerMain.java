@@ -69,7 +69,7 @@ public class BlockServerMain {
 			Thread blockServerRpcServiceThread = new RequestRpcServer(
 					DEFAUL_REQUEST_EXECUTE_CONCURRENCY,
 					DEFAULT_MESSAGE_HANDLE_CONCURRENCY,
-					new BlockServerRequestInvokerAdaptor(blockServer))
+					new BlockServerRequestInvokerAdaptorV1(blockServer))
 					.asyncStartRequestRpcServer(port);
 			blockServerList.add(blockServer);
 			blockServerRpcServiceThreadList.add(blockServerRpcServiceThread);

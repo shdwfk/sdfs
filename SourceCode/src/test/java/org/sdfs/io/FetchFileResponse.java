@@ -1,10 +1,19 @@
-package org.sdfs.io.response;
+package org.sdfs.io;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.junit.Ignore;
+import org.sdfs.io.response.IResponse;
+import org.sdfs.io.response.ResponseType;
+
+@Ignore
 public class FetchFileResponse implements IResponse {
+	static {
+		SdfsSerializationRegistry.register(-4, FetchFileResponse.class);
+	}
+
 	private byte[] fileData;
 
 	public byte[] getFileData() {

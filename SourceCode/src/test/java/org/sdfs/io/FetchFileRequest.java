@@ -1,10 +1,19 @@
-package org.sdfs.io.request;
+package org.sdfs.io;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.junit.Ignore;
+import org.sdfs.io.request.IRequest;
+import org.sdfs.io.request.RequestType;
+
+@Ignore
 public class FetchFileRequest implements IRequest {
+	static {
+		SdfsSerializationRegistry.register(-2, FetchFileRequest.class);
+	}
+
 	/** FileObject所在的SuperBlock的blockId */
 	private long blockId;
 	/** FileObject的fileKey */

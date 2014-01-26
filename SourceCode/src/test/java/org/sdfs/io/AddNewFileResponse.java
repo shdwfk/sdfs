@@ -1,10 +1,12 @@
-package org.sdfs.io.response;
+package org.sdfs.io;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.sdfs.io.request.AddNewFileRequest;
+import org.junit.Ignore;
+import org.sdfs.io.response.IResponse;
+import org.sdfs.io.response.ResponseType;
 
 /**
  * 服务器端收到 {@link AddNewFileRequest} 请求，这是服务器的返回类型
@@ -12,7 +14,12 @@ import org.sdfs.io.request.AddNewFileRequest;
  * @author wangfk
  *
  */
+@Ignore
 public class AddNewFileResponse implements IResponse {
+	static {
+		SdfsSerializationRegistry.register(-3, AddNewFileResponse.class);
+	}
+
 	/** 上传新文件是不是成功的 */
 	private boolean successful;
 

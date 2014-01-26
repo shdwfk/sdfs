@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.sdfs.TestCaseBase;
+import org.sdfs.io.AddNewFileRequest;
 import org.sdfs.io.SdfsSerializationHelper;
-import org.sdfs.io.request.AddNewFileRequest;
 import org.sdfs.io.rpc.RpcMessage;
 
 public class RpcMessageTest extends TestCaseBase {
