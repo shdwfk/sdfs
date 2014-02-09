@@ -5,15 +5,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import org.sdfs.io.DataCell;
-import org.sdfs.io.rpc.RpcException;
 
 public class CommonArgsResponse implements IResponse {
 	private DataCell result;
-	private RpcException exception;
-
-	public boolean isExceptional() {
-		return exception == null;
-	}
 
 	public DataCell getResult() {
 		return result;
@@ -23,30 +17,27 @@ public class CommonArgsResponse implements IResponse {
 		this.result = result;
 	}
 
-	public RpcException getException() {
-		return exception;
-	}
-
-	public void setException(RpcException exception) {
-		this.exception = exception;
-	}
-
 	@Override
 	public void readFrom(DataInput in) throws IOException {
-		// TODO Auto-generated method stub
-		
+		if (in.readBoolean()) {
+			result = new DataCell();
+			result.readFrom(in);
+		} else {
+			result = null;
+		}
 	}
 
 	@Override
 	public void writeTo(DataOutput out) throws IOException {
-		// TODO Auto-generated method stub
-		
+		out.writeBoolean(result != null);
+		if (result != null) {
+			result.writeTo(out);
+		}
 	}
 
 	@Override
 	public ResponseType getResponseType() {
-		// TODO Auto-generated method stub
-		return null;
+		return ResponseType.COMMON_ARGS_RESPONSE;
 	}
 
 }

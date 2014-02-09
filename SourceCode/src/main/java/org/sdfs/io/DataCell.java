@@ -8,6 +8,8 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DataCell implements ISdfsSerializable {
 	private enum DataType {
@@ -93,6 +95,13 @@ public class DataCell implements ISdfsSerializable {
 		}
 	}
 
+	private static final Map<Class<?>, DataType> dataTypeMap = new HashMap<>();
+	static {
+		for (DataType dataType : DataType.values()) {
+			dataTypeMap.put(dataType.getDataClassType(), dataType);
+		}
+	}
+	
 	private DataType dataType;
 	private byte[] dataBuffer;
 	private ByteArrayOutputStream outputStream;
@@ -450,6 +459,121 @@ public class DataCell implements ISdfsSerializable {
 			value[i] = SdfsSerializationHelper.readStringNull(dataInput);
 		}
 		return value;
+	}
+
+	public Object getDataObject() throws IOException {
+		switch (dataType) {
+		case BOOLEAN:
+			return getBoolean();
+		case BOOLEAN_ARRAY:
+			return getBooleanArray();
+		case BYTE:
+			return getByte();
+		case BYTE_ARRAY:
+			return getByteArray();
+		case CHAR:
+			return getChar();
+		case CHAR_ARRAY:
+			return getCharArray();
+		case DOUBLE:
+			return getDouble();
+		case DOUBLE_ARRAY:
+			return getDoubleArray();
+		case FLOAT:
+			return getFloat();
+		case FLOAT_ARRAY:
+			return getFloatArray();
+		case INT:
+			return getInt();
+		case INT_ARRAY:
+			return getIntArray();
+		case LONG:
+			return getLong();
+		case LONG_ARRAY:
+			return getLongArray();
+		case SHORT:
+			return getShort();
+		case SHORT_ARRAY:
+			return getShortArray();
+		case STRING:
+			return getString();
+		case STRING_ARRAY:
+			return getStringArray();
+		case VOID:
+			return null;
+		default:
+			throw new IOException("Invalid data type: " + this.dataType);
+		}
+	}
+
+	public static DataCell fromDataObject(Class<?> dataTypeClass, Object dataObject) throws IOException {
+		DataCell dataCell = new DataCell();
+		DataType dataType = dataTypeMap.get(dataTypeClass);
+		if (dataType == null) {
+			throw new IOException("Unsupported data type: " + dataTypeClass);
+		}
+		switch (dataType) {
+		case BOOLEAN:
+			dataCell.setBoolean((boolean) dataObject);
+			break;
+		case BOOLEAN_ARRAY:
+			dataCell.setBooleanArray((boolean[]) dataObject);
+			break;
+		case BYTE:
+			dataCell.setByte((byte) dataObject);
+			break;
+		case BYTE_ARRAY:
+			dataCell.setByteArray((byte[]) dataObject);
+			break;
+		case CHAR:
+			dataCell.setChar((char) dataObject);
+			break;
+		case CHAR_ARRAY:
+			dataCell.setCharArray((char[]) dataObject);
+			break;
+		case DOUBLE:
+			dataCell.setDouble((double) dataObject);
+			break;
+		case DOUBLE_ARRAY:
+			dataCell.setDoubleArray((double[]) dataObject);
+			break;
+		case FLOAT:
+			dataCell.setFloat((float) dataObject);
+			break;
+		case FLOAT_ARRAY:
+			dataCell.setFloatArray((float[]) dataObject);
+			break;
+		case INT:
+			dataCell.setInt((int) dataObject);
+			break;
+		case INT_ARRAY:
+			dataCell.setIntArray((int[]) dataObject);
+			break;
+		case LONG:
+			dataCell.setLong((long) dataObject);
+			break;
+		case LONG_ARRAY:
+			dataCell.setLongArray((long[]) dataObject);
+			break;
+		case SHORT:
+			dataCell.setShort((short) dataObject);
+			break;
+		case SHORT_ARRAY:
+			dataCell.setShortArray((short[]) dataObject);
+			break;
+		case STRING:
+			dataCell.setString((String) dataObject);
+			break;
+		case STRING_ARRAY:
+			dataCell.setStringArray((String[]) dataObject);
+			break;
+		case VOID:
+			dataCell.setVoid();
+			break;
+		default:
+			throw new IOException("Unsupported data type: " + dataType);
+		}
+		return dataCell;
 	}
 
 	private DataInput getDataInput() {
